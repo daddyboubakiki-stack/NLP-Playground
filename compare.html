@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142c34"><title>モデル比較 | NLP Playground</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;background:#f0f5f5;color:#24363c}*{box-sizing:border-box}body{margin:0}header{background:#142c34;color:#fff;padding:22px 16px}header a{color:#c7ebe6}h1{font-size:27px;margin:9px 0 6px}header p{margin:0;color:#cbdfde;font-size:14px;line-height:1.6}main{max-width:950px;padding:14px 10px 75px;margin:auto}.card{background:white;border:1px solid #d9e6e8;border-radius:16px;margin:0 0 13px;padding:16px;box-shadow:0 4px 12px #14333a0d}h2{font-size:20px;margin:2px 0 13px}h3{font-size:16px;margin:10px 0}label{display:block;font-weight:750;margin-bottom:9px}textarea{width:100%;min-height:96px;resize:vertical;padding:12px;font:16px/1.5 system-ui;border:1px solid #99b2b8;border-radius:10px}button{border:0;border-radius:9px;color:white;background:#167b78;font-weight:700;font-size:14px;padding:11px 14px;cursor:pointer}.samples{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.samples button{font-size:12px;background:#e8f3f2;color:#236966;padding:8px 10px}.actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}.status{font-size:13px;color:#426b74;line-height:1.6}.error{color:#af4040}.hint{font-size:13px;color:#5e7781;line-height:1.8}.models{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.panel{border:1px solid #d8e4e4;background:#f4faf9;border-radius:12px;padding:12px;min-width:0}.state{color:#416c69;font-size:12px;font-weight:700;display:block;margin:5px 0}.tokens{display:flex;flex-wrap:wrap;gap:7px}.token{border-radius:9px;border:1px solid #d8e4e5;background:white;padding:8px;max-width:100%}.token strong{display:block;margin-bottom:4px;overflow-wrap:anywhere}.tag{font-size:11px;background:#e8eaf7;color:#3b4c73;border-radius:5px;padding:2px 5px;overflow-wrap:anywhere}.wink .tag{background:#e6f2e7;color:#395e36}.scroll{overflow-x:auto}table{width:100%;min-width:550px;border-collapse:collapse}th,td{padding:10px 7px;border-bottom:1px solid #e3eaeb;text-align:left;font-size:13px;vertical-align:top}th{background:#eef5f5;font-size:12px}.diff{background:#fff5df}pre{font-size:12px;overflow:auto;white-space:pre-wrap;max-height:330px;background:#f3f6f6;padding:12px}summary{font-weight:700;cursor:pointer}.hidden{display:none}footer{text-align:center;color:#6b858c;font-size:12px;padding:10px}@media(max-width:540px){.models{grid-template-columns:1fr}.actions button{width:100%}}
+</style><script defer src="https://cdn.jsdelivr.net/npm/compromise@14.19.0/builds/compromise.min.js"></script></head>
+<body><header><a href="./">← これまでの解析画面に戻る</a><h1>🌳 2モデル比較実験室</h1><p>同じ英文を2種類の解析器に読ませて、品詞判定を比べよう！</p></header><main>
+<section class="card"><label for="sentence">英文を入力</label><textarea id="sentence" spellcheck="false">I saw her duck.</textarea><div class="samples">
+<button data-example="I saw her duck.">I saw her duck.</button><button data-example="Time flies like an arrow.">Time flies like an arrow.</button><button data-example="The old man the boats.">The old man the boats.</button><button data-example="She can fish.">She can fish.</button></div>
+<div class="actions"><span class="hint">完全ブラウザ内解析・課金APIなし</span><button id="run">2モデルで解析する 🔬</button></div><p id="status" class="status" role="status">モデルを準備中…</p></section>
+<section class="card"><h2>モデルの状態</h2><div class="models"><div class="panel"><b>compromise</b><span id="state-c" class="state">読み込み中</span><span class="hint">辞書・ルールに基づく独自タグ体系</span></div><div class="panel"><b>winkNLP</b><span id="state-w" class="state">読み込み中</span><span class="hint">学習済みモデルによるUniversal POS</span></div></div></section>
+<section class="card hidden" id="result"><h2>🔬 解析結果</h2><div class="models"><div class="panel"><h3>compromise</h3><div class="tokens" id="tokens-c"></div></div><div class="panel"><h3>winkNLP</h3><div class="tokens" id="tokens-w"></div></div></div>
+<h3>並べて観察</h3><div class="scroll"><table><thead><tr><th>単語</th><th>compromise原タグ</th><th>簡易対応POS</th><th>winkNLP UPOS</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p id="note" class="hint"></p><details><summary>生の出力データ（JSON）</summary><pre id="raw"></pre></details></section>
+<section class="card"><h2>📖 読み方の注意</h2><p class="hint">compromiseのタグは複数つくことがあり、winkNLPのUPOSとは体系が異なります。比較表の「簡易対応POS」は本サイトが元タグを大まかに変換したもので、<b>compromise自身が予測したUPOSではありません</b>。句構造や文意の判定とも異なります。</p><p class="hint">出典：<a href="https://github.com/spencermountain/compromise">compromise</a> ／ <a href="https://winkjs.org/wink-nlp/">winkNLP</a> ／ <a href="https://winkjs.org/wink-nlp/part-of-speech.html">UPOS表</a></p></section>
+</main><footer>🌱 NLP Playground v0.2 beta — 推論サーバーは使いません</footer>
+<script type="module">
+let wink=null,winkError="";
+const $=id=>document.getElementById(id);
+const say=(msg,error=false)=>{$("status").textContent=msg;$("status").className="status"+(error?" error":"");};
+const mapTag=tags=>{
+ const t=new Set(tags);
+ if(t.has("Pronoun"))return"PRON";
+ if(t.has("Determiner"))return"DET";
+ if(t.has("Preposition"))return"ADP";
+ if(t.has("Adverb"))return"ADV";
+ if(t.has("Adjective"))return"ADJ";
+ if(t.has("Auxiliary")||t.has("Modal"))return"AUX";
+ if(t.has("Verb"))return"VERB";
+ if(t.has("Noun"))return"NOUN";
+ if(t.has("Conjunction"))return"CONJ?";
+ return"—";
+};
+function draw(id,tokens,w=false){
+ const root=$(id);root.replaceChildren();
+ for(const t of tokens){const box=document.createElement("div");box.className="token"+(w?" wink":"");const b=document.createElement("strong");b.textContent=t.word;const tag=document.createElement("span");tag.className="tag";tag.textContent=w?t.pos:(t.tags.join(" / ")||"—");box.append(b,tag);root.append(box);}
+}
+function analyze(){
+ const sentence=$("sentence").value.trim();
+ if(!sentence){say("英文を入力してね",true);return;}
+ if(typeof window.nlp!=="function"){say("compromiseを読み込めません。再読み込みしてね。",true);return;}
+ try{
+  const orig=window.nlp(sentence).json();
+  const ct=orig.flatMap(s=>(s.terms||[]).map(t=>({word:t.text||t.normal||"",tags:Array.isArray(t.tags)?t.tags:[]})));
+  draw("tokens-c",ct);
+  const body=$("rows");body.replaceChildren();
+  $("result").classList.remove("hidden");
+  if(!wink){
+    $("tokens-w").textContent=winkError?"winkNLPの読み込みに失敗":"winkNLPの読み込み中";
+    $("note").textContent="モデルが揃っていないため、比較結果はまだ表示しません。";
+    $("raw").textContent=JSON.stringify({compromise:orig,winkError},null,2);
+    say(winkError?"winkNLPを読み込めませんでした。通信を確認してね。":"winkNLPの読み込み待ち…",!!winkError);return;
+  }
+  const doc=wink.readDoc(sentence),its=wink.its,wt=[];
+  doc.tokens().each(t=>wt.push({word:t.out(),pos:t.out(its.pos),lemma:t.out(its.lemma),type:t.out(its.type)}));
+  draw("tokens-w",wt,true);
+  const cw=ct.filter(t=>/[\p{L}\p{N}]/u.test(t.word));
+  const ww=wt.filter(t=>t.type!=="punctuation"&&/[\p{L}\p{N}]/u.test(t.word));
+  const matched=cw.length===ww.length&&cw.every((t,i)=>t.word.toLowerCase()===ww[i].word.toLowerCase());
+  if(matched){
+    cw.forEach((c,i)=>{const w=ww[i],mapped=mapTag(c.tags),tr=document.createElement("tr");if(mapped!=="—"&&mapped!==w.pos)tr.className="diff";
+      for(const val of [c.word,c.tags.join(", ")||"—",mapped,w.pos]){const td=document.createElement("td");td.textContent=val;tr.append(td);}body.append(tr);});
+    $("note").textContent="黄色は比較用の簡易POSとwinkNLPのPOSが異なる行。タグ体系が違うため、必ずしも解析ミスとは限りません。";
+  }else{
+    const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=4;td.textContent="単語の区切りが異なったので、無理に同じ行へ並べるのを避けました。上の元の出力を見比べてね。";tr.append(td);body.append(tr);
+    $("note").textContent="分かち書きの違いも立派な比較結果です。";
+  }
+  $("raw").textContent=JSON.stringify({compromise:orig,winkNLP:wt},null,2);
+  say("両モデルの解析ができたよ！ ☺️");
+ }catch(e){say("解析エラー："+String(e.message||e),true);console.error(e);}
+}
+$("run").addEventListener("click",analyze);
+document.querySelectorAll("[data-example]").forEach(b=>b.addEventListener("click",()=>{$("sentence").value=b.dataset.example;analyze();}));
+function showComp(){$("state-c").textContent=typeof window.nlp==="function"?"✅ 使用可能":"⚠️ 読み込み失敗";}
+if(document.readyState==="complete")showComp();else window.addEventListener("load",showComp);
+try{
+ const [lib,modelPkg]=await Promise.all([
+  import("https://esm.sh/wink-nlp@2.4.0?bundle"),
+  import("https://esm.sh/wink-eng-lite-web-model@1.8.1?bundle")
+ ]);
+ const init=lib.default||lib, model=modelPkg.default||modelPkg;
+ wink=init(model);
+ $("state-w").textContent="✅ 使用可能";
+ say("2モデルの準備完了！ 好きな英文で実験してね。");
+}catch(e){
+ winkError=String(e.message||e);$("state-w").textContent="⚠️ 読み込み失敗";
+ say("winkNLPのモデル読み込みに失敗。通信状況を確認してね。",true);console.error(e);
+}
+</script></body></html>
