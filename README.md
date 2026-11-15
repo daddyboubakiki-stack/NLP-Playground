@@ -23,3 +23,12 @@ Public リポジトリなのでソースコードは公開されます。秘密�
 - [GitHub Pagesドキュメント](https://docs.github.com/en/pages)
 
 > 推定結果は誤ることがあり、生成文法の分析結果と同一視できません。
+
+
+## v0.2 β — 2モデル比較
+- [比較実験ページ（compare.html）](https://daddyboubakiki-stack.github.io/NLP-Playground/compare.html)
+- `compromise@14.19.0` と `wink-nlp@2.4.0` + `wink-eng-lite-web-model@1.8.1` の英語品詞解析結果を併記
+- 結果の両方を生データとして表示する。分かち書きが違う場合は対応表の比較を止める
+- `compromise` の独自タグは大まかな対応POSに変換して比較するが、元のタグも残す
+- winkNLPはブラウザESM用CDNから読み込む。通信環境によってはモデルの読み込みが失敗する場合があるため、スマホでの動作検証が必要
+- APIキー、GPUサーバー、有料クラウド契約なし
