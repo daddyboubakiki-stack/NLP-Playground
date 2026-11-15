@@ -32,3 +32,11 @@ Public リポジトリなのでソースコードは公開されます。秘密�
 - `compromise` の独自タグは大まかな対応POSに変換して比較するが、元のタグも残す
 - winkNLPはブラウザESM用CDNから読み込む。通信環境によってはモデルの読み込みが失敗する場合があるため、スマホでの動作検証が必要
 - APIキー、GPUサーバー、有料クラウド契約なし
+
+
+## 重量級3モデルをスマホから無料で試す（Colab）
+- [**Colabで3モデル比較ノートを開く**](https://colab.research.google.com/github/daddyboubakiki-stack/NLP-Playground/blob/main/notebooks/Heavy_Models_Comparison.ipynb)
+- spaCy + RoBERTa（en_core_web_trf）、Stanza（標準英語モデルで品詞・依存構造・句構造）、BERT品詞モデル（Alireza0017/bert-finetuned-pos）を**ColabのPython仮想PC**で実行
+- スマホのブラウザからノートのセルを実行する。課金APIやCloud Runは不要
+- Google Colabの無料枠は時間・メモリ・利用制限あり。無料環境をWebアプリの常設サーバー代わりにしない
+- 初回モデル導入やパッケージダウンロードは重い。実行はまだ実機未確認の試作版
