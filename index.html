@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#101827" />
+  <title>NLP Playground 🌳</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,'Noto Sans JP',sans-serif;color:#1d2938;background:#f3f7f8}*{box-sizing:border-box}body{margin:0}header{background:#101827;color:white;padding:30px max(20px,calc((100% - 920px)/2)) 25px}h1{font-size:clamp(27px,6vw,40px);margin:0 0 8px}header p{color:#d0d8df;margin:0;line-height:1.7}main{max-width:960px;margin:0 auto;padding:22px 16px 80px}.card{background:white;border:1px solid #dae5ea;border-radius:18px;padding:20px;margin-bottom:15px;box-shadow:0 4px 16px #1632490b}.muted{color:#607080;font-size:14px}label{display:block;font-weight:700;margin-bottom:10px}textarea{display:block;resize:vertical;width:100%;min-height:115px;border:1px solid #aabac4;border-radius:11px;padding:14px;font:17px/1.6 system-ui;outline-color:#2a868a}button{border:0;border-radius:10px;padding:11px 17px;background:#167d80;color:white;font-weight:700;font-size:15px;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.sample{background:#eaf4f5;color:#17575b;margin:6px 6px 0 0;padding:7px 12px;font-size:13px}button.secondary{background:#e4edf0;color:#23444d}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}.status{font-size:13px;color:#375560;margin-top:12px}.status.err{color:#af3131}.stats{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.stat{background:#eff7f6;border-radius:10px;padding:9px 13px;font-size:14px}.token-grid{display:flex;flex-wrap:wrap;gap:8px}.token{border:1px solid #d5e0e2;border-radius:11px;padding:10px 12px;min-width:68px;text-align:center}.token b{display:block;font-size:18px;margin-bottom:5px;overflow-wrap:anywhere}.pill{display:inline-block;background:#e8e9f7;color:#3d4275;font-size:12px;border-radius:8px;padding:3px 7px;margin:2px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:400px;text-align:left}th,td{padding:11px 9px;border-bottom:1px solid #e1e9ec;font-size:14px;vertical-align:top}th{background:#f1f6f7;color:#496473}code{font-size:12px;overflow-wrap:anywhere}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;word-break:break-word;line-height:1.6;font-size:12px;background:#f2f5f7;border-radius:10px;padding:12px;max-height:350px;overflow:auto}.model-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.chip{border-radius:999px;padding:4px 9px;background:#e6f5eb;color:#176245;font-size:12px;font-weight:700}.chip.next{background:#f3f0e7;color:#8b6a30}footer{text-align:center;font-size:13px;color:#607080;padding:16px}.hidden{display:none}@media(max-width:460px){.card{padding:15px}main{padding:12px 10px 60px}.toolbar button{width:100%}textarea{font-size:16px}}
+  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/compromise@14.19.0/builds/compromise.min.js"></script>
+</head>
+<body>
+<header><h1>🌳 NLP Playground</h1><p>言語学のための、ちいさな自然言語処理実験室。<br>英文を入れて、機械の解析を観察しよう。</p></header>
+<main>
+<section class="card">
+ <label for="sentence">🔎 解析したい英文</label>
+ <textarea id="sentence" spellcheck="false">I saw her duck.</textarea>
+ <div aria-label="例文を選択">
+  <button class="sample" type="button" data-text="I saw her duck.">I saw her duck.</button>
+  <button class="sample" type="button" data-text="The old man the boats.">The old man the boats.</button>
+  <button class="sample" type="button" data-text="Time flies like an arrow.">Time flies like an arrow.</button>
+  <button class="sample" type="button" data-text="Does she like music?">Does she like music?</button>
+ </div>
+ <div class="toolbar"><span class="muted">ブラウザ内で解析。APIキー・課金設定不要。</span><button id="run" type="button">解析する 🧪</button></div>
+ <p id="status" class="status" role="status">モデルを読み込み中…</p>
+</section>
+<section class="card">
+ <div class="model-row"><h2>モデル比較</h2><span class="muted">バージョン 0.1</span></div>
+ <div class="model-row"><div><b>compromise</b> <span class="chip">利用可能</span><p class="muted">ルール・辞書を中心に文法的なタグを推定</p></div><a href="https://github.com/spencermountain/compromise" target="_blank" rel="noopener noreferrer">原典 ↗</a></div>
+ <div class="model-row"><div><b>winkNLP</b> <span class="chip next">追加予定</span><p class="muted">別系統の解析結果と比較するため次に実装</p></div><a href="https://winkjs.org/wink-nlp/" target="_blank" rel="noopener noreferrer">原典 ↗</a></div>
+ <p class="muted">※ 現在は最初のモデルのみ実装。構文木・依存解析はまだ対応していません。</p>
+</section>
+<section id="results" class="card hidden" aria-live="polite">
+ <h2>解析結果</h2><div id="stats" class="stats"></div>
+ <h3>単語ごとのタグ</h3><div id="tokens" class="token-grid"></div>
+ <h3>詳細</h3><div class="table-wrap"><table><thead><tr><th>単語</th><th>モデルによるタグ</th><th>正規化形</th></tr></thead><tbody id="rows"></tbody></table></div>
+ <details><summary>生の解析JSONを見る</summary><pre id="json"></pre></details>
+ <p class="muted">⚠️ タグはモデルの推定結果です。生成文法の理論的構造を示すものではなく、誤解析もありえます。</p>
+</section>
+</main>
+<footer>🌱 NLP Playground — 実験用プロトタイプ / 解析本文はブラウザ内で処理します（初回はCDNからライブラリを読み込みます）</footer>
+<script>
+(function(){
+ const byId=(s)=>document.getElementById(s), status=byId('status'), text=byId('sentence');
+ function setStatus(message,error=false){status.textContent=message;status.className='status'+(error?' err':'');}
+ function render(){
+   if(typeof window.nlp!=='function'){setStatus('解析ライブラリを読み込めませんでした。通信環境を確認して再読み込みしてね。',true);return;}
+   const input=text.value.trim();if(!input){setStatus('英文を入力してね。',true);return;}
+   try {
+     const doc=window.nlp(input), raw=doc.json();
+     const pieces=raw.flatMap(sentence=>sentence.terms||[]);
+     const stat=byId('stats'), tokenEl=byId('tokens'), rowEl=byId('rows');
+     stat.replaceChildren();tokenEl.replaceChildren();rowEl.replaceChildren();
+     const statValues=[['文の数',raw.length],['語・記号の数',pieces.length],['名詞句の推定',doc.nouns().out('array').length],['動詞句の推定',doc.verbs().out('array').length]];
+     for(const [key,value] of statValues){const e=document.createElement('span');e.className='stat';e.textContent=key+'：'+value;stat.append(e);}
+     for(const term of pieces){
+       const word=term.text||term.normal||'?',tags=Array.isArray(term.tags)?term.tags:[];
+       const el=document.createElement('div');el.className='token';const b=document.createElement('b');b.textContent=word;el.append(b);
+       for(const tag of tags.slice(0,3)){const sp=document.createElement('span');sp.className='pill';sp.textContent=tag;el.append(sp);} tokenEl.append(el);
+       const tr=document.createElement('tr');for(const value of [word,tags.join(', ')||'—',term.normal||'—']){const td=document.createElement('td');td.textContent=value;tr.append(td);}rowEl.append(tr);
+     }
+     byId('json').textContent=JSON.stringify(raw,null,2);byId('results').classList.remove('hidden');setStatus('解析できたよ！ 単語のタグを見比べてみよう ☺️');
+   }catch(err){setStatus('解析に失敗しました：'+String(err.message||err),true);}
+ }
+ byId('run').addEventListener('click',render);
+ document.querySelectorAll('.sample').forEach(e=>e.addEventListener('click',()=>{text.value=e.dataset.text;render();}));
+ window.addEventListener('load',()=>{setStatus(typeof window.nlp==='function'?'準備完了！ 解析ボタンを押してね。':'ライブラリを読み込めませんでした。通信環境を確認してね。',typeof window.nlp!=='function');});
+})();
+</script>
+</body>
+</html>
